@@ -23,8 +23,6 @@
     "react-is": "^18.2.0"
   },
   "devDependencies": {
-    "@graphql-cli/codegen": "^2.4.9",
-    "@graphql-codegen/cli": "2.13.2",
     "@graphql-codegen/client-preset": "^1.0.2",
     "@graphql-codegen/typescript": "^2.7.3",
     "@graphql-codegen/typescript-operations": "^2.5.3",
