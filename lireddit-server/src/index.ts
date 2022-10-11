@@ -1,3 +1,4 @@
+import "dotenv-safe/config"
 import { COOKIE_NAME, __prod__ } from './constants'
 import express from 'express'
 import { ApolloServer } from 'apollo-server-express'
@@ -16,6 +17,7 @@ import path from 'path'
 import { Updoot } from './entities/Updoot'
 import { createUserLoader } from './utils/createUserLoader'
 import { createUpdootLoader } from './utils/createUpdootLoader'
+import process from "process"
 
 const {
     ApolloServerPluginLandingPageLocalDefault,
@@ -25,9 +27,7 @@ const {
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
-        database: 'lireddit2',
-        username: 'postgres',
-        password: 'testpass',
+        url: process.env.DATABASE_URL,
         logging: false,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*') ],
@@ -39,7 +39,7 @@ const main = async () => {
     /* await Post.delete({}) */
 
     const RedisStore = connectRedis(session)
-    const redis = new Redis()
+    const redis = new Redis(process.env.REDIS_URL)
 
     const app = express();
 
@@ -62,10 +62,11 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
                 httpOnly: true,
                 sameSite: 'lax',
-                secure: __prod__
+                secure: __prod__,
+                domain: undefined
             },
             saveUninitialized: false,
-            secret: 'keyboard cat',
+            secret: process.env.SECRET,
             resave: false
         })
     )
@@ -96,7 +97,7 @@ const main = async () => {
     await apolloServer.start()
     apolloServer.applyMiddleware({ app, cors: false });
 
-    app.listen(4000, () => {
+    app.listen(parseInt(process.env.PORT), () => {
         console.log('server started on localhost:4000')
     })
 }
